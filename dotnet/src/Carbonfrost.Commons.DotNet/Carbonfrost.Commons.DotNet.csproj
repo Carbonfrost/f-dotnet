@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Build.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Carbonfrost.Commons.DotNet</RootNamespace>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Copyright>Copyright 2013, 2015, 2017, 2019-2020 Carbonfrost Systems, Inc.</Copyright>
+    <Authors>Carbonfrost</Authors>
+    <Description>
+      An API for the representation of .NET metadata
+    </Description>
+    <PackageProjectUrl>https://github.com/Carbonfrost/f-dotnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Carbonfrost/f-dotnet</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Carbonfrost.Commons.Core" Version="0.3.0" />
+  </ItemGroup>
+</Project>

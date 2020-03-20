@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../Build.props" />
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <KeyOriginatorFile>../../F5NonCommercial.snk</KeyOriginatorFile>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Carbonfrost.Commons.Spec" Version="0.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Carbonfrost.Commons.DotNet\Carbonfrost.Commons.DotNet.csproj" />
+  </ItemGroup>
+</Project>

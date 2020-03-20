@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+#
+# Verifies requirements before releasing a package
+#
+set -e
+
+project_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)
+
+# Can only release if not dirty
+if ! git diff --quiet; then
+	echo >&2 "fatal: can't release when dirty worktree" && exit 1
+fi
+
+# Can only release if we have a tag on the current commit.
+if ! git describe --tags --exact-match > /dev/null; then
+  echo >&2 "fatal: release requires tag" && exit 1
+fi

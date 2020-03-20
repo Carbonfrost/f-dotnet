@@ -1,0 +1,50 @@
+<#@ template language="C#" #>
+<#@ output extension=".g.cs" #>
+
+using System;
+using System.Collections.Generic;
+
+// File generated at <#= DateTime.Now #>
+
+<#
+
+    string[] ItemTypes = {
+        "EventName",
+        "FieldName",
+        "PropertyName",
+        "MethodName",
+        "MethodSpecificationName",
+        "GenericInstanceMethodName",
+        "TypeName",
+        "GenericParameterName",
+        "TypeSpecificationName",
+    };
+
+#>
+namespace Carbonfrost.Commons.DotNet {
+
+<# foreach (var type in ItemTypes) {
+#>
+
+   partial class <#= type #> {
+
+        public new <#= type #> WithAssembly(AssemblyName assembly) {
+            return (<#= type #>) base.WithAssembly(assembly);
+        }
+
+        public new <#= type #> WithAssemblyUnspecified() {
+            return (<#= type #>) base.WithAssemblyUnspecified();
+        }
+
+        public new <#= type #> WithDeclaringType(TypeName declaringType) {
+            return (<#= type #>) base.WithDeclaringType(declaringType);
+        }
+
+        public new <#= type #> WithDeclaringTypeUnspecified() {
+            return (<#= type #>) base.WithDeclaringTypeUnspecified();
+        }
+    }
+
+<# } #>
+
+}

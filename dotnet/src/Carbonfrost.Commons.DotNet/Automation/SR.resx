@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, srgen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </resheader>
+  <data name="AmbiguousMatch" xml:space="preserve">
+    <value>Multiple values matched the search criteria.</value>
+  </data>
+  <data name="ArgumentCannotBeSpecificationType" xml:space="preserve">
+    <value>The argument cannot be a type specification.</value>
+  </data>
+  <data name="BinaryOperatorRequired" xml:space="preserve">
+    <value>A binary operator is required.</value>
+  </data>
+  <data name="CannotBindGenericParameterName" xml:space="preserve">
+    <value>Cannot bind an unbound generic parameter name because its index is out of range.</value>
+  </data>
+  <data name="CannotConvertToSymbolType" xml:space="preserve">
+    <value>Cannot convert to specified symbol type</value>
+  </data>
+  <data name="CannotMakeByReferenceType" xml:space="preserve">
+    <value>Type cannot be made into a byref type.</value>
+  </data>
+  <data name="CannotMakeNullableType" xml:space="preserve">
+    <value>Type cannot be made into a nullable type.</value>
+  </data>
+  <data name="ConversionOperatorExpected" xml:space="preserve">
+    <value>Conversion operator is expected.</value>
+  </data>
+  <data name="GenericParametersLengthMismatch" xml:space="preserve">
+    <value>Number of generic arguments does not match the number of parameters defined.</value>
+  </data>
+  <data name="NotSupportedBySpecifications" xml:space="preserve">
+    <value>Type specifications do not support this operation.</value>
+  </data>
+  <data name="NotSupportedCodeReferenceConversion" xml:space="preserve">
+    <value>Specified metadata name does not support conversion to a code reference</value>
+  </data>
+  <data name="UnaryOperatorExpected" xml:space="preserve">
+    <value>A unary operator type is expected.</value>
+  </data>
+  <data name="UnknownConversionOperatorCannotBeUsed" xml:space="preserve">
+    <value>Unknown or conversion operator type cannot be specified for this argument.</value>
+  </data>
+</root>
