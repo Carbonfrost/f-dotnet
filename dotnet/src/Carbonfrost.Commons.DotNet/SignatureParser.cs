@@ -121,25 +121,33 @@ namespace Carbonfrost.Commons.DotNet {
 
             if (!hasGenericParams && sz > 0) {
                 // Method``2(A,B) -- mangled but no type parameter syntax
-                var result = new DefaultMethodName(declaringType, name, returnType);
-                result.FinalizeGenerics(sz);
-                result.FinalizeParameters(pms);
-
-                return result;
+                return new DefaultMethodName(
+                    declaringType,
+                    name,
+                    DefaultMethodName.SetGenericMangle(sz),
+                    DefaultMethodName.SetParameters(pms),
+                    DefaultMethodName.SetReturnType(returnType)
+                );
 
             } else if (generics.MustBeParameters || (generics.CouldBeParameters && _preferGenericParamsInMethods)) {
-                var result = new DefaultMethodName(declaringType, name, returnType);
-                result.FinalizeGenerics(generics.ConvertToGenerics(true).ToArray());
-                result.FinalizeParameters(pms);
+                return new DefaultMethodName(
+                    declaringType,
+                    name,
+                    DefaultMethodName.SetGenerics(generics.ConvertToGenerics(true).ToArray()),
+                    DefaultMethodName.SetParameters(pms),
+                    DefaultMethodName.SetReturnType(returnType)
+                );
                 // TODO Could have discrepancy between generics declared with position and
                 // named in type parameter list (sz != generics.Raw.Count)
-                return result;
 
             } else {
-                var elementName = new DefaultMethodName(declaringType, name, returnType);
-
-                elementName.FinalizeGenerics(generics.Raw.Count);
-                elementName.FinalizeParameters(pms);
+                var elementName = new DefaultMethodName(
+                    declaringType,
+                    name,
+                    DefaultMethodName.SetGenericMangle(generics.Raw.Count),
+                    DefaultMethodName.SetParameters(pms),
+                    DefaultMethodName.SetReturnType(returnType)
+                );
                 return new GenericInstanceMethodName(elementName, generics.Raw.ToArray());
             }
         }

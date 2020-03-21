@@ -335,7 +335,6 @@ namespace Carbonfrost.Commons.DotNet {
                 throw Failure.CollectionContainsNullElement("parameters");
             }
 
-            parameters = BindParameterTypes(null, parameters);
             return new PropertyName(this, name, null, ParameterData.AllFromTypes(parameters));
         }
 
@@ -354,12 +353,12 @@ namespace Carbonfrost.Commons.DotNet {
 
             int mangle;
             var method = TypeName.StripMangle(name, out mangle);
-            var result = new DefaultMethodName(this, method, null);
-
-            result.FinalizeGenerics(mangle);
-            parameters = BindParameterTypes(result, parameters);
-            result.FinalizeParameters(ParameterData.AllFromTypes(parameters));
-            return result;
+            return new DefaultMethodName(
+                this,
+                method,
+                DefaultMethodName.SetGenericMangle(mangle),
+                DefaultMethodName.SetParameters(parameters)
+            );
         }
 
         private TypeName[] BindParameterTypes(MethodName method,
@@ -401,10 +400,13 @@ namespace Carbonfrost.Commons.DotNet {
                 throw Failure.CollectionContainsNullElement("parameters");
             }
 
-            var result = new DefaultMethodName(this, name, returnType);
-            result.FinalizeGenerics(typeParameters.Select((t, i) => GenericParameterName.New(result, i, t)).ToArray());
-            result.FinalizeParameters(ParameterData.AllFromTypes(BindParameterTypes(result, parameters.ToArray())));
-            return result;
+            return new DefaultMethodName(
+                this,
+                name,
+                DefaultMethodName.SetGenericParameters(typeParameters),
+                DefaultMethodName.SetParameters(parameters),
+                DefaultMethodName.SetReturnType(returnType)
+            );
         }
 
         // TODO Add GetMethod where there are generic parameters
@@ -456,9 +458,12 @@ namespace Carbonfrost.Commons.DotNet {
             }
 
             string name = MethodName.GetOperator(operatorType);
-            var result = new DefaultMethodName(this, name, resultType ?? this);
-            result.FinalizeParameters(ParameterData.AllFromTypes(new[] { leftOperandType ?? this, rightOperandType ?? this }));
-            return result;
+            return new DefaultMethodName(
+                this,
+                name,
+                DefaultMethodName.SetParameters(new[] { leftOperandType ?? this, rightOperandType ?? this }),
+                DefaultMethodName.SetReturnType(resultType ?? this)
+            );
         }
 
         public MethodName GetUnaryOperator(OperatorType operatorType,

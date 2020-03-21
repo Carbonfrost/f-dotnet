@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,7 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Carbonfrost.Commons.Core;
 
@@ -68,38 +66,40 @@ namespace Carbonfrost.Commons.DotNet {
                 throw new ArgumentNullException("constructor");
             }
 
-            var result = new DefaultMethodName(
+            return new DefaultMethodName(
                 TypeName.FromType(constructor.DeclaringType),
                 constructor.Name,
-                null);
-            result.FinalizeGenerics(0);
-            result.FinalizeParameters(ParameterData.ConvertAll(constructor.GetParameters()));
-            return result;
+                DefaultMethodName.SetGenericMangle(0),
+                DefaultMethodName.SetParameters(
+                    ParameterData.ConvertAll(constructor.GetParameters())
+                )
+            );
         }
 
         public static MethodName FromMethodInfo(System.Reflection.MethodInfo method) {
-            if (method == null)
-                throw new ArgumentNullException("method");
+            if (method == null) {
+                throw new ArgumentNullException(nameof(method));
+            }
 
             if (method.IsGenericMethod && !method.IsGenericMethodDefinition) {
                 return new GenericInstanceMethodName(
                     FromMethodInfo(method.GetGenericMethodDefinition()),
-                    method.GetGenericArguments().Select(TypeName.FromType).ToArray());
+                    method.GetGenericArguments().Select(TypeName.FromType).ToArray()
+                );
+            }
+
+            var generics = DefaultMethodName.SetGenericMangle(0);
+            if (method.IsGenericMethodDefinition) {
+                generics = DefaultMethodName.SetGenericArguments(method.GetGenericArguments());
             }
 
             var result = new DefaultMethodName(
                 TypeName.FromType(method.DeclaringType),
                 method.Name,
-                TypeName.FromType(method.ReturnType));
-
-            if (method.IsGenericMethodDefinition) {
-                var all = method.GetGenericArguments().Select((t, i) => GenericParameterName.New(result, i, t.Name)).ToArray();
-                result.FinalizeGenerics(all);
-            } else {
-                result.FinalizeGenerics(0);
-            }
-
-            result.FinalizeParameters(ParameterData.ConvertAll(method.GetParameters()));
+                generics,
+                DefaultMethodName.SetParameters(method.GetParameters()),
+                DefaultMethodName.SetReturnType(TypeName.FromType(method.ReturnType))
+            );
             return result;
         }
     }

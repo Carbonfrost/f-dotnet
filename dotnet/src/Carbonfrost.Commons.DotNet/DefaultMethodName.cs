@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.DotNet {
 
@@ -23,10 +24,14 @@ namespace Carbonfrost.Commons.DotNet {
 
         private ParameterNameCollection _parameters;
         private GenericParameterNameCollection _genericParameters;
-        private string _name;
+        private readonly string _name;
         private ParameterName _returnParameter;
 
-        public override string Name { get { return _name; } }
+        public override string Name {
+            get {
+                return _name;
+            }
+        }
 
         public override IReadOnlyList<TypeName> GenericArguments {
             get {
@@ -64,17 +69,67 @@ namespace Carbonfrost.Commons.DotNet {
             }
         }
 
-        internal DefaultMethodName(
+        private DefaultMethodName(
             TypeName declaringType, string methodName) : base(declaringType) {
 
             _name = methodName;
         }
 
-        internal DefaultMethodName(
-            TypeName declaringType, string methodName, TypeName returnType) : base(declaringType) {
-
+        internal DefaultMethodName(TypeName declaringType, string methodName, params Arg[] arguments) : base(declaringType) {
             _name = methodName;
-            _returnParameter = new DefaultReturnParameterName(this, returnType, null);
+            foreach (var a in arguments) {
+                a(this);
+            }
+        }
+
+        internal delegate void Arg(DefaultMethodName method);
+
+        internal static Arg SetGenericMangle(int count) {
+            return result => result.FinalizeGenerics(count);
+        }
+
+        internal static Arg SetParameters(ParameterInfo[] parameters) {
+            return result => result.FinalizeParameters(ParameterData.ConvertAll(parameters));
+        }
+
+        internal static Arg SetParameters(IEnumerable<TypeName> parameterTypes) {
+            return result => {
+                result.FinalizeParameters(
+                    ParameterData.AllFromTypes(
+                        BindParameterTypes(result, parameterTypes)
+                    )
+                );
+            };
+        }
+
+        private static IEnumerable<TypeName> BindParameterTypes(DefaultMethodName method, IEnumerable<TypeName> parameters) {
+            foreach (var p in parameters) {
+                yield return p.CloneBind(method.DeclaringType, method);
+            }
+        }
+
+        internal static Arg SetParameters(ParameterData[] pms) {
+            return result => result.FinalizeParameters(pms);
+        }
+
+        internal static Arg SetReturnType(TypeName returnType) {
+            return result => result.FinalizeReturnType(returnType);
+        }
+
+        internal static Arg SetGenerics(GenericParameterName[] pms) {
+            return result => result.FinalizeGenerics(pms);
+        }
+
+        internal static Arg SetGenericArguments(Type[] type) {
+            return result => result.FinalizeGenerics(
+                type.Select((t, i) => GenericParameterName.New(result, i, t.Name)).ToArray()
+            );
+        }
+
+        internal static Arg SetGenericParameters(IEnumerable<string> names) {
+            return result => result.FinalizeGenerics(
+                names.Select((t, i) => GenericParameterName.New(result, i, t)).ToArray()
+            );
         }
 
         protected override MemberName WithDeclaringTypeOverride(TypeName declaringType) {
@@ -120,6 +175,14 @@ namespace Carbonfrost.Commons.DotNet {
         internal override MethodName WithParameters(ParameterName[] pms) {
             return new DefaultMethodName(DeclaringType, _name) {
                 _parameters = pms == null ? null : new ParameterNameCollection(pms),
+                _genericParameters = _genericParameters,
+                _returnParameter = CopyReturnParameter(this),
+            };
+        }
+
+        internal MethodName WithParameters(ParameterData[] pms) {
+            return new DefaultMethodName(DeclaringType, _name) {
+                _parameters = ParameterData.ToArray(this, pms),
                 _genericParameters = _genericParameters,
                 _returnParameter = CopyReturnParameter(this),
             };

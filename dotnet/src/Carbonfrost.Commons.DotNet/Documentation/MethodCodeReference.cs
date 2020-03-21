@@ -94,13 +94,13 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
             ParameterData[] pms;
             TypeName type = null;
             if (declaring.Length == 0 || TypeName.TryParse(declaring, out type)) {
-                DefaultMethodName s = new DefaultMethodName(type, rawName);
-                s.FinalizeGenerics(mangle);
+                var s = new DefaultMethodName(
+                    type,
+                    rawName,
+                    DefaultMethodName.SetGenericMangle(mangle)
+                );
                 HelperParseParametersAndReturnType(s, myReturnType, parameters, out pms, out rt);
-                s.FinalizeReturnType(rt);
-
-                result = s;
-                s.FinalizeParameters(pms);
+                result = s.WithParameters(pms).WithReturnType(rt);
                 return true;
             }
 

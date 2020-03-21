@@ -109,23 +109,28 @@ namespace Carbonfrost.Commons.DotNet {
         private MethodName GetGetMethod() {
             string name = "get_" + Name;
 
-            var result = new DefaultMethodName(DeclaringType, name, PropertyType);
-            var parameters = ParameterData.AllFromTypes(IndexParameters.Select(t => t.ParameterType));
-            result.FinalizeParameters(parameters);
-            return result;
+            return new DefaultMethodName(
+                DeclaringType,
+                name,
+                DefaultMethodName.SetParameters(IndexParameters.Select(t => t.ParameterType)),
+                DefaultMethodName.SetReturnType(PropertyType)
+            );
         }
 
         private MethodName GetSetMethod() {
             string name = "set_" + Name;
 
-            var result = new DefaultMethodName(DeclaringType, name, TypeName.Void);
             var parameters = new ParameterData[IndexParameters.Count + 1];
             parameters[parameters.Length - 1] = new ParameterData("value", PropertyType);
             var indexes = ParameterData.AllFromTypes(IndexParameters.Select(t => t.ParameterType));
             indexes.CopyTo(parameters, 0);
 
-            result.FinalizeParameters(parameters);
-            return result;
+            return new DefaultMethodName(
+                DeclaringType,
+                name,
+                DefaultMethodName.SetParameters(parameters),
+                DefaultMethodName.SetReturnType(TypeName.Void)
+            );
         }
 
         public static PropertyName Parse(string text) {
