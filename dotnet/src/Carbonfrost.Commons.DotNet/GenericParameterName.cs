@@ -28,10 +28,15 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public bool IsPositional {
-            get { return string.IsNullOrEmpty(this.Name) || this.Name[0] == '`'; } }
+            get {
+                return string.IsNullOrEmpty(Name) || Name[0] == '`';
+            }
+        }
 
         public sealed override bool IsGenericParameter {
-            get { return true; }
+            get {
+                return true;
+            }
         }
 
         public virtual GenericParameterName DeclaringGenericParameter {
@@ -52,11 +57,15 @@ namespace Carbonfrost.Commons.DotNet {
         public abstract override string Name { get; }
 
         public override string FullName {
-            get { return this.Name; }
+            get {
+                return Name;
+            }
         }
 
         public sealed override GenericParameterNameCollection GenericParameters {
-            get { return GenericParameterNameCollection.Empty; }
+            get {
+                return GenericParameterNameCollection.Empty;
+            }
         }
 
         internal GenericParameterName(TypeName declaring)
@@ -85,6 +94,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         protected override TypeName WithNamespaceOverride(string ns) {
             return UpdateOverride(DeclaringType.WithNamespace(ns));
+        }
+
+        protected override MemberName WithDeclaringTypeOverride(TypeName declaringType) {
+            throw new NotSupportedException();
         }
 
         internal sealed override string Accept(MetadataNameFormat formatter, string format, IFormatProvider provider) {

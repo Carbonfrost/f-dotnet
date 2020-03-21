@@ -124,6 +124,11 @@ namespace Carbonfrost.Commons.DotNet {
         internal MethodName(TypeName declaringType)
             : base(declaringType) {}
 
+
+        public static MethodName Create(string name) {
+            return new DefaultMethodName(null, name);
+        }
+
         internal static string StripMangle(string name, out int value) {
             value = 0;
 

@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,7 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -77,7 +77,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         public sealed override bool Matches(MetadataName name) {
             if (name == null)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             if (object.ReferenceEquals(this, name))
                 return true;
 
@@ -86,7 +86,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         public virtual bool Matches(TypeName name) {
             if (name == null)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             return false;
         }
@@ -147,10 +147,12 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         internal static string Combine(string ns, string name) {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (name.Length == 0)
-                throw Failure.EmptyString("name");
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
+            if (name.Length == 0) {
+                throw Failure.EmptyString(nameof(name));
+            }
 
             if (string.IsNullOrEmpty(ns)) {
                 return name;
@@ -262,16 +264,20 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public TypeName GetNestedType(string name) {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (name.Length == 0)
-                throw Failure.EmptyString("name");
-            if (this.IsTypeSpecification && !this.IsGenericType)
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
+            if (name.Length == 0) {
+                throw Failure.EmptyString(nameof(name));
+            }
+            if (IsTypeSpecification && !IsGenericType) {
                 throw DotNetFailure.NotSupportedBySpecifications();
+            }
 
             TypeName tn;
-            if (!TypeName.TryParse(name, TypeNameParseOptions.AssumeGenericParameters, out tn))
-                throw Failure.NotParsable("name", typeof(TypeName));
+            if (!TypeName.TryParse(name, TypeNameParseOptions.AssumeGenericParameters, out tn)) {
+                throw Failure.NotParsable(nameof(name), typeof(TypeName));
+            }
 
             return GetNestedType(tn);
         }
@@ -283,17 +289,24 @@ namespace Carbonfrost.Commons.DotNet {
             return nested.WithDeclaringType(this);
         }
 
+        public PropertyName GetProperty(string name, IEnumerable<TypeName> parameters) {
+            return GetProperty(name, null, parameters);
+        }
+
         public PropertyName GetProperty(string name,
                                         TypeName propertyType,
                                         IEnumerable<TypeName> parameters) {
-            if (name == null)
-                throw new ArgumentNullException("name");
-            if (name.Length == 0)
-                throw Failure.EmptyString("name");
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
+            if (name.Length == 0) {
+                throw Failure.EmptyString(nameof(name));
+            }
 
             parameters = parameters ?? Array.Empty<TypeName>();
-            if (parameters.Any(t => t == null))
-                throw Failure.CollectionContainsNullElement("parameters");
+            if (parameters.Any(t => t == null)) {
+                throw Failure.CollectionContainsNullElement(nameof(parameters));
+            }
 
             // TODO Can't bind unboound method parameters here
             var allParams = ParameterData.AllFromTypes(BindParameterTypes(null, parameters.ToArray()));
@@ -302,19 +315,19 @@ namespace Carbonfrost.Commons.DotNet {
 
         public PropertyName GetProperty(string name) {
             if (name == null)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             if (name.Length == 0)
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
 
             return new PropertyName(this, name, null, Array.Empty<ParameterData>());
         }
 
         public PropertyName GetProperty(string name, params TypeName[] parameters) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
             }
 
             parameters = parameters ?? Array.Empty<TypeName>();
@@ -328,10 +341,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         public MethodName GetMethod(string name, params TypeName[] parameters) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
             }
 
             parameters = parameters ?? Array.Empty<TypeName>();
@@ -369,10 +382,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         public MethodName GetMethod(string name, TypeName returnType, IEnumerable<string> typeParameters, IEnumerable<TypeName> parameters) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
             }
             if (returnType == null) {
                 throw new ArgumentNullException("returnType");
@@ -488,10 +501,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         public EventName GetEvent(string name, TypeName eventType) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
             }
 
             return new EventName(this, name, SafeCloneBind(eventType));
@@ -503,10 +516,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         public FieldName GetField(string name, TypeName fieldType) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length == 0) {
-                throw Failure.EmptyString("name");
+                throw Failure.EmptyString(nameof(name));
             }
 
             return new FieldName(this, name, SafeCloneBind(fieldType));
@@ -605,7 +618,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         public TypeName WithGenericParameters(int count) {
             if (count < 0) {
-                throw Failure.Negative("count", count);
+                throw Failure.Negative(nameof(count), count);
             }
             GenericParameterName[] names = new GenericParameterName[count];
             int m = 1;
@@ -617,17 +630,13 @@ namespace Carbonfrost.Commons.DotNet {
 
         public TypeName WithNamespace(NamespaceName ns) {
             if (ns == null) {
-                throw new ArgumentNullException("ns");
+                throw new ArgumentNullException(nameof(ns));
             }
             return WithNamespace(ns.FullName);
         }
 
         public TypeName WithNamespace(string ns) {
             return WithNamespaceOverride(ns);
-        }
-
-        protected override MemberName WithDeclaringTypeOverride(TypeName declaringType) {
-            throw new NotImplementedException();
         }
 
         protected abstract TypeName WithNamespaceOverride(string ns);
@@ -648,10 +657,10 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         private TypeName SafeCloneBind(TypeName type) {
-            if (type == null)
+            if (type == null) {
                 return null;
-            else
-                return type.CloneBind(this, null);
+            }
+            return type.CloneBind(this, null);
         }
 
         internal static bool MatchGenericArguments(IReadOnlyList<TypeName> left,

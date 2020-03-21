@@ -227,5 +227,13 @@ namespace Carbonfrost.Commons.DotNet {
 
             return new PropertyName(declaringType, property.Name, propertyType, parms);
         }
+
+        public static PropertyName Create(string name) {
+            return new PropertyName(null, name, null, ParameterNameCollection.Empty);
+        }
+
+        public static PropertyName Create(string name, TypeName propertyType) {
+            return new PropertyName(null, name, propertyType, ParameterNameCollection.Empty);
+        }
     }
 }

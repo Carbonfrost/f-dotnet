@@ -307,5 +307,11 @@ namespace Carbonfrost.UnitTests.DotNet {
             Assert.Equal(b, a);
         }
 
+        [Fact]
+        public void Create_should_create_method_name_from_name() {
+            var a = MethodName.Create("Hello");
+            var b = MethodName.Parse("Hello");
+            Assert.Equal(a, b);
+        }
     }
 }

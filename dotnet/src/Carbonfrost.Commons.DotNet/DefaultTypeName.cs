@@ -35,10 +35,10 @@ namespace Carbonfrost.Commons.DotNet {
                                  string namespaceText) : base(null) {
 
             if (namespaceText == null) {
-                throw new ArgumentNullException("namespaceText");
+                _fullName = name;
+            } else {
+                _fullName = TypeName.Combine(namespaceText, name);
             }
-
-            _fullName = TypeName.Combine(namespaceText, name);
             _name = name;
             _namespace = namespaceText;
             _assembly = assembly;

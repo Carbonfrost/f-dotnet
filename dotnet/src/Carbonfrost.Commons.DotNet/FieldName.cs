@@ -59,7 +59,18 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public override SymbolType SymbolType {
-            get { return SymbolType.Field; } }
+            get {
+                return SymbolType.Field;
+            }
+        }
+
+        public static FieldName Create(string name) {
+            return new FieldName(null, name, null);
+        }
+
+        public static FieldName Create(string name, TypeName fieldType) {
+            return new FieldName(null, name, fieldType);
+        }
 
         public static bool TryParse(string text, out FieldName result) {
             return _TryParse(text, out result) == null;

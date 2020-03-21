@@ -111,6 +111,14 @@ namespace Carbonfrost.Commons.DotNet {
                 && TypeName.SafeMatch(this.EventType, name.EventType);
         }
 
+        public static EventName Create(string name) {
+            return new EventName(null, name, null);
+        }
+
+        public static EventName Create(string name, TypeName fieldType) {
+            return new EventName(null, name, fieldType);
+        }
+
         public static EventName Parse(string text) {
             return Utility.Parse<EventName>(text, _TryParse);
         }

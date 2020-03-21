@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,11 +15,7 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using Carbonfrost.Commons.Core;
-using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.DotNet {
 
@@ -38,7 +34,9 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public ParameterNameCollection Parameters {
-            get { return _parms; }
+            get {
+                return _parms;
+            }
         }
 
         public int ParameterCount {
@@ -66,11 +64,15 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         protected override TypeName WithNamespaceOverride(string ns) {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         protected override MemberName WithAssemblyOverride(AssemblyName assembly) {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
+        }
+
+        protected override MemberName WithDeclaringTypeOverride(TypeName declaringType) {
+            throw new NotSupportedException();
         }
 
         public override string Namespace {
