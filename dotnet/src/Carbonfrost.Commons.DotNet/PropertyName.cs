@@ -55,10 +55,10 @@ namespace Carbonfrost.Commons.DotNet {
                 }
                 if (IsIndexer) {
                     result |= PropertyNameComponents.IndexParametersSpecified;
-                    if (ParameterCount == 0 || Parameters.Any(y => y.ParameterType != null)) {
+                    if (IndexParameterCount == 0 || IndexParameters.Any(y => y.ParameterType != null)) {
                         result |= PropertyNameComponents.IndexParameterTypes;
                     }
-                    if (ParameterCount == 0 || Parameters.Any(y => !string.IsNullOrEmpty(y.Name))) {
+                    if (IndexParameterCount == 0 || IndexParameters.Any(y => !string.IsNullOrEmpty(y.Name))) {
                         result |= PropertyNameComponents.IndexParameterNames;
                     }
                 }
@@ -80,7 +80,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         public bool IsIndexer {
             get {
-                return ParameterCount > 0;
+                return IndexParameterCount > 0;
             }
         }
 
@@ -90,9 +90,9 @@ namespace Carbonfrost.Commons.DotNet {
             }
         }
 
-        public int ParameterCount {
+        public int IndexParameterCount {
             get {
-                return Parameters.Count;
+                return IndexParameters.Count;
             }
         }
 
@@ -100,7 +100,7 @@ namespace Carbonfrost.Commons.DotNet {
             get; private set;
         }
 
-        public ParameterNameCollection Parameters {
+        public ParameterNameCollection IndexParameters {
             get {
                 return _parameters;
             }
@@ -110,7 +110,7 @@ namespace Carbonfrost.Commons.DotNet {
             string name = "get_" + Name;
 
             var result = new DefaultMethodName(DeclaringType, name, PropertyType);
-            var parameters = ParameterData.AllFromTypes(this.Parameters.Select(t => t.ParameterType));
+            var parameters = ParameterData.AllFromTypes(IndexParameters.Select(t => t.ParameterType));
             result.FinalizeParameters(parameters);
             return result;
         }
@@ -119,9 +119,9 @@ namespace Carbonfrost.Commons.DotNet {
             string name = "set_" + Name;
 
             var result = new DefaultMethodName(DeclaringType, name, TypeName.Void);
-            var parameters = new ParameterData[Parameters.Count + 1];
+            var parameters = new ParameterData[IndexParameters.Count + 1];
             parameters[parameters.Length - 1] = new ParameterData("value", PropertyType);
-            var indexes = ParameterData.AllFromTypes(Parameters.Select(t => t.ParameterType));
+            var indexes = ParameterData.AllFromTypes(IndexParameters.Select(t => t.ParameterType));
             indexes.CopyTo(parameters, 0);
 
             result.FinalizeParameters(parameters);
@@ -185,7 +185,7 @@ namespace Carbonfrost.Commons.DotNet {
                 throw new ArgumentNullException("name");
             }
 
-            bool matchesParameters = Parameters.Zip(name.Parameters,
+            bool matchesParameters = IndexParameters.Zip(name.IndexParameters,
                                         (t, u) => t.Matches(u)).AllTrue();
             return name.Name == this.Name
                 && TypeName.SafeMatch(this.DeclaringType, name.DeclaringType)
@@ -197,7 +197,7 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         protected override MemberName WithDeclaringTypeOverride(TypeName declaringType) {
-            return new PropertyName(declaringType, _name, PropertyType, Parameters);
+            return new PropertyName(declaringType, _name, PropertyType, IndexParameters);
         }
 
         protected override MemberName WithAssemblyOverride(AssemblyName assembly) {

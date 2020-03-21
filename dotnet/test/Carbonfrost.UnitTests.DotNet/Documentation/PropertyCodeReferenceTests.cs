@@ -44,7 +44,7 @@ namespace Carbonfrost.UnitTests.DotNet.Documentation {
             var name = (PropertyName) cr.MetadataName;
             Assert.Equal("System.Json.JsonValue", name.DeclaringType.FullName);
             Assert.Equal("Item", name.Name);
-            Assert.Equal("System.String", name.Parameters[0].ParameterType.FullName);
+            Assert.Equal("System.String", name.IndexParameters[0].ParameterType.FullName);
         }
 
         [Fact]
@@ -58,12 +58,12 @@ namespace Carbonfrost.UnitTests.DotNet.Documentation {
             var name = (PropertyName) cr.MetadataName;
             Assert.Equal("System.Collections.ObjectModel.ReadOnlyDictionary`2", name.DeclaringType.FullName);
             Assert.Equal("System.Collections.Generic.IDictionary`2.Item", name.Name);
-            Assert.Equal(1, name.Parameters.Count);
-            Assert.Null(name.Parameters[0].Name);
-            Assert.NotNull(name.Parameters[0].ParameterType);
+            Assert.Equal(1, name.IndexParameters.Count);
+            Assert.Null(name.IndexParameters[0].Name);
+            Assert.NotNull(name.IndexParameters[0].ParameterType);
 
-            Assert.True(name.Parameters[0].ParameterType.IsGenericParameter);
-            Assert.Equal(0, ((GenericParameterName) name.Parameters[0].ParameterType).Position);
+            Assert.True(name.IndexParameters[0].ParameterType.IsGenericParameter);
+            Assert.Equal(0, ((GenericParameterName) name.IndexParameters[0].ParameterType).Position);
 
             // TODO The name of the type parameters gets lost here (are these considered the same?)
             Assert.Equal("P:System.Collections.ObjectModel.ReadOnlyDictionary`2.System#Collections#Generic#IDictionary{T1@T2}#Item(`0)",

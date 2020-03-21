@@ -31,7 +31,7 @@ namespace Carbonfrost.Commons.DotNet {
         public override int Position { get { return _position; } }
 
         public override TypeName ParameterType { get { return _parameterType; } }
-        public override MemberName Member { get { return _member; } }
+        internal override MemberName Member { get { return _member; } }
 
         public override string Name { get { return _name; } }
 

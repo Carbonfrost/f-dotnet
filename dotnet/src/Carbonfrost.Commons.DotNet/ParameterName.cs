@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2015, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2015, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.DotNet {
 
@@ -36,11 +35,31 @@ namespace Carbonfrost.Commons.DotNet {
             }
         }
 
+        public bool IsIndexerParameter {
+            get {
+                return DeclaringProperty != null;
+            }
+        }
+
+        public MethodName DeclaringMethod {
+            get {
+                return Member as MethodName;
+            }
+        }
+
+        public PropertyName DeclaringProperty {
+            get {
+                return Member as PropertyName;
+            }
+        }
+
         public abstract TypeName ParameterType { get; }
-        public abstract MemberName Member { get; }
+        internal abstract MemberName Member { get; }
 
         public override string FullName {
-            get { return Name; }
+            get {
+                return Name;
+            }
         }
 
         internal abstract ModifierCollection Modifiers { get; }

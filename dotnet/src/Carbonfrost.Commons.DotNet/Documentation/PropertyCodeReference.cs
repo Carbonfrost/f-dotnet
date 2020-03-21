@@ -82,9 +82,9 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
                 StringBuilder sb = new StringBuilder();
                 AppendBaseMemberName(name, sb);
 
-                if (name.Parameters.Count > 0) {
+                if (name.IndexParameters.Count > 0) {
                     sb.Append('(');
-                    AppendParameters(name.Parameters, sb);
+                    AppendParameters(name.IndexParameters, sb);
                     sb.Append(')');
                 }
 

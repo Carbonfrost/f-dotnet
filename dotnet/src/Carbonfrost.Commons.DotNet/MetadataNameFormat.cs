@@ -458,11 +458,11 @@ namespace Carbonfrost.Commons.DotNet {
                                               string format = null,
                                               IFormatProvider formatProvider = null)
         {
-            if (name.Parameters.Count == 0)
+            if (name.IndexParameters.Count == 0)
                 return;
 
             this.AppendParameterList(sb,
-                                     name.Parameters,
+                                     name.IndexParameters,
                                      "[]",
                                      format,
                                      formatProvider);

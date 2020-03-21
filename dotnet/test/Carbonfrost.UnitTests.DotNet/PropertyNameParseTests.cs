@@ -54,9 +54,9 @@ namespace Carbonfrost.UnitTests.DotNet {
         public void Parse_should_handle_parameter_list_type_and_name(string name) {
             var pn = PropertyName.Parse(name);
             Assert.Equal("Chars", pn.Name);
-            Assert.Equal("int", pn.Parameters[0].ParameterType.Name);
-            Assert.Equal("index", pn.Parameters[0].Name);
-            Assert.Equal(0, pn.Parameters[0].Position);
+            Assert.Equal("int", pn.IndexParameters[0].ParameterType.Name);
+            Assert.Equal("index", pn.IndexParameters[0].Name);
+            Assert.Equal(0, pn.IndexParameters[0].Position);
         }
 
         [Theory]
@@ -67,8 +67,8 @@ namespace Carbonfrost.UnitTests.DotNet {
         public void Parse_should_handle_parameter_list_type_only(string name) {
             var pn = PropertyName.Parse(name);
             Assert.Equal("Chars", pn.Name);
-            Assert.Equal(string.Empty, pn.Parameters[0].Name);
-            Assert.Equal("int", pn.Parameters[0].ParameterType.Name);
+            Assert.Equal(string.Empty, pn.IndexParameters[0].Name);
+            Assert.Equal("int", pn.IndexParameters[0].ParameterType.Name);
         }
 
         [Theory]
@@ -77,10 +77,10 @@ namespace Carbonfrost.UnitTests.DotNet {
         public void Parse_should_handle_anonymous_parameter_list(string name, int count) {
             var pn = PropertyName.Parse(name);
             Assert.Equal("Chars", pn.Name);
-            Assert.Equal(count, pn.Parameters.Count);
+            Assert.Equal(count, pn.IndexParameters.Count);
             if (count > 0) {
-                Assert.Equal(string.Empty, pn.Parameters[0].Name);
-                Assert.Equal(null, pn.Parameters[0].ParameterType);
+                Assert.Equal(string.Empty, pn.IndexParameters[0].Name);
+                Assert.Equal(null, pn.IndexParameters[0].ParameterType);
             }
         }
 
@@ -91,9 +91,9 @@ namespace Carbonfrost.UnitTests.DotNet {
         public void Parse_should_handle_byreference_parameter(string text) {
             var pn = PropertyName.Parse(text);
             Assert.Equal("Chars", pn.Name);
-            Assert.Equal(1, pn.Parameters.Count);
-            Assert.Equal("Int64&", pn.Parameters[0].ParameterType.Name);
-            Assert.True(pn.Parameters[0].ParameterType.IsByReference);
+            Assert.Equal(1, pn.IndexParameters.Count);
+            Assert.Equal("Int64&", pn.IndexParameters[0].ParameterType.Name);
+            Assert.True(pn.IndexParameters[0].ParameterType.IsByReference);
         }
 
         [Theory]
@@ -103,9 +103,9 @@ namespace Carbonfrost.UnitTests.DotNet {
         public void Parse_should_handle_pointer_parameter(string text) {
             var pn = PropertyName.Parse(text);
             Assert.Equal("Chars", pn.Name);
-            Assert.Equal(1, pn.Parameters.Count);
-            Assert.Equal("Int64*", pn.Parameters[0].ParameterType.Name);
-            Assert.True(pn.Parameters[0].ParameterType.IsPointer);
+            Assert.Equal(1, pn.IndexParameters.Count);
+            Assert.Equal("Int64*", pn.IndexParameters[0].ParameterType.Name);
+            Assert.True(pn.IndexParameters[0].ParameterType.IsPointer);
         }
 
         [Theory]
