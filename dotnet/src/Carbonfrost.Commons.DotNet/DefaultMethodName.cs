@@ -28,15 +28,29 @@ namespace Carbonfrost.Commons.DotNet {
 
         public override string Name { get { return _name; } }
 
-        public override IReadOnlyList<TypeName> GenericArguments { get { return Empty<TypeName>.ReadOnlyList; } }
+        public override IReadOnlyList<TypeName> GenericArguments {
+            get {
+                return Array.Empty<TypeName>();
+            }
+        }
+
         public override GenericParameterNameCollection GenericParameters {
             get {
                 return _genericParameters ?? GenericParameterNameCollection.Empty;
             }
         }
-        public override ParameterNameCollection Parameters { get { return _parameters ?? ParameterNameCollection.Empty; } }
 
-        public override bool HasParametersSpecified { get { return _parameters != null; } }
+        public override ParameterNameCollection Parameters {
+            get {
+                return _parameters ?? ParameterNameCollection.Empty;
+            }
+        }
+
+        public override bool HasParametersSpecified {
+            get {
+                return _parameters != null;
+            }
+        }
 
         public override ParameterName ReturnParameter {
             get {
@@ -143,10 +157,11 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         internal void FinalizeGenerics(GenericParameterName[] names) {
-            if (names == null)
-                _genericParameters = new GenericParameterNameCollection(Empty<GenericParameterName>.Array);
-            else
+            if (names == null) {
+                _genericParameters = new GenericParameterNameCollection(Array.Empty<GenericParameterName>());
+            } else {
                 _genericParameters = new GenericParameterNameCollection(names);
+            }
         }
 
         internal override string Accept(MetadataNameFormat formatter, string format, IFormatProvider provider) {

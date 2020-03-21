@@ -1,11 +1,11 @@
 //
-// Copyright 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,9 +21,9 @@ using Carbonfrost.Commons.Core;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public class ParameterNameCollection : IReadOnlyList<ParameterName> {
+    public class ParameterNameCollection : IList<ParameterName>, IReadOnlyList<ParameterName> {
 
-        public static ParameterNameCollection Empty = new ParameterNameCollection(Empty<ParameterName>.Array);
+        public static ParameterNameCollection Empty = new ParameterNameCollection(Array.Empty<ParameterName>());
 
         private readonly IReadOnlyList<ParameterName> _items;
 
@@ -34,10 +34,10 @@ namespace Carbonfrost.Commons.DotNet {
         public ParameterName this[string name] {
             get {
                 if (name == null) {
-                    throw new ArgumentNullException("name");
+                    throw new ArgumentNullException(nameof(name));
                 }
-                if (string.IsNullOrEmpty("name")) {
-                    throw Failure.EmptyString("name");
+                if (string.IsNullOrEmpty(nameof(name))) {
+                    throw Failure.EmptyString(nameof(name));
                 }
                 return this.FirstOrDefault(t => t.Name == name);
             }
@@ -55,6 +55,21 @@ namespace Carbonfrost.Commons.DotNet {
             }
         }
 
+        bool ICollection<ParameterName>.IsReadOnly {
+            get {
+                return true;
+            }
+        }
+
+        ParameterName IList<ParameterName>.this[int index] {
+            get {
+                return this[index];
+            }
+            set {
+                throw Failure.ReadOnlyCollection();
+            }
+        }
+
         public bool Contains(string name) {
             return this[name] != null;
         }
@@ -65,10 +80,10 @@ namespace Carbonfrost.Commons.DotNet {
 
         public int IndexOf(string name) {
             if (name == null) {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
-            if (string.IsNullOrEmpty("name")) {
-                throw Failure.EmptyString("name");
+            if (string.IsNullOrEmpty(nameof(name))) {
+                throw Failure.EmptyString(nameof(name));
             }
             for (int i = 0; i < _items.Count; i++) {
                 if (_items[i].Name == name) {
@@ -80,7 +95,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         public int IndexOf(ParameterName item) {
             if (item == null) {
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
             }
             for (int i = 0; i < _items.Count; i++) {
                 if (_items[i] == item) {
@@ -96,6 +111,30 @@ namespace Carbonfrost.Commons.DotNet {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        void IList<ParameterName>.Insert(int index, ParameterName item) {
+            throw Failure.ReadOnlyCollection();
+        }
+
+        void IList<ParameterName>.RemoveAt(int index) {
+            throw Failure.ReadOnlyCollection();
+        }
+
+        void ICollection<ParameterName>.Add(ParameterName item) {
+            throw Failure.ReadOnlyCollection();
+        }
+
+        void ICollection<ParameterName>.Clear() {
+            throw Failure.ReadOnlyCollection();
+        }
+
+        void ICollection<ParameterName>.CopyTo(ParameterName[] array, int arrayIndex) {
+            _items.ToList().CopyTo(array, arrayIndex);
+        }
+
+        bool ICollection<ParameterName>.Remove(ParameterName item) {
+            throw Failure.ReadOnlyCollection();
         }
     }
 }

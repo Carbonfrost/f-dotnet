@@ -291,7 +291,7 @@ namespace Carbonfrost.Commons.DotNet {
             if (name.Length == 0)
                 throw Failure.EmptyString("name");
 
-            parameters = parameters ?? Empty<TypeName>.Array;
+            parameters = parameters ?? Array.Empty<TypeName>();
             if (parameters.Any(t => t == null))
                 throw Failure.CollectionContainsNullElement("parameters");
 
@@ -306,32 +306,38 @@ namespace Carbonfrost.Commons.DotNet {
             if (name.Length == 0)
                 throw Failure.EmptyString("name");
 
-            return new PropertyName(this, name, null, Empty<ParameterData>.Array);
+            return new PropertyName(this, name, null, Array.Empty<ParameterData>());
         }
 
         public PropertyName GetProperty(string name, params TypeName[] parameters) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
-            if (name.Length == 0)
+            }
+            if (name.Length == 0) {
                 throw Failure.EmptyString("name");
+            }
 
-            parameters = parameters ?? Empty<TypeName>.Array;
-            if (parameters.Any(t => t == null))
+            parameters = parameters ?? Array.Empty<TypeName>();
+            if (parameters.Any(t => t == null)) {
                 throw Failure.CollectionContainsNullElement("parameters");
+            }
 
             parameters = BindParameterTypes(null, parameters);
             return new PropertyName(this, name, null, ParameterData.AllFromTypes(parameters));
         }
 
         public MethodName GetMethod(string name, params TypeName[] parameters) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
-            if (name.Length == 0)
+            }
+            if (name.Length == 0) {
                 throw Failure.EmptyString("name");
+            }
 
-            parameters = parameters ?? Empty<TypeName>.Array;
-            if (parameters.Any(t => t == null))
+            parameters = parameters ?? Array.Empty<TypeName>();
+            if (parameters.Any(t => t == null)) {
                 throw Failure.CollectionContainsNullElement("parameters");
+            }
 
             int mangle;
             var method = TypeName.StripMangle(name, out mangle);
@@ -362,20 +368,25 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public MethodName GetMethod(string name, TypeName returnType, IEnumerable<string> typeParameters, IEnumerable<TypeName> parameters) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
-            if (name.Length == 0)
+            }
+            if (name.Length == 0) {
                 throw Failure.EmptyString("name");
-            if (returnType == null)
+            }
+            if (returnType == null) {
                 throw new ArgumentNullException("returnType");
+            }
 
-            typeParameters = typeParameters ?? Empty<string>.Array;
-            parameters = parameters ?? Empty<TypeName>.Array;
+            typeParameters = typeParameters ?? Array.Empty<string>();
+            parameters = parameters ?? Array.Empty<TypeName>();
 
-            if (typeParameters.Any(t => t == null))
+            if (typeParameters.Any(t => t == null)) {
                 throw Failure.CollectionContainsNullElement("typeParameters");
-            if (parameters.Any(t => t == null))
+            }
+            if (parameters.Any(t => t == null)) {
                 throw Failure.CollectionContainsNullElement("parameters");
+            }
 
             var result = new DefaultMethodName(this, name, returnType);
             result.FinalizeGenerics(typeParameters.Select((t, i) => GenericParameterName.New(result, i, t)).ToArray());
@@ -386,16 +397,18 @@ namespace Carbonfrost.Commons.DotNet {
         // TODO Add GetMethod where there are generic parameters
 
         public MethodName GetOperator(OperatorType operatorType) {
-            if (operatorType == OperatorType.Unknown)
+            if (operatorType == OperatorType.Unknown) {
                 throw DotNetFailure.UnknownConversionOperatorCannotBeUsed("operatorType", operatorType);
+            }
             if (operatorType == OperatorType.Explicit
-                || operatorType == OperatorType.Implicit)
+                || operatorType == OperatorType.Implicit) {
                 throw DotNetFailure.UnknownConversionOperatorCannotBeUsed("operatorType", operatorType);
+            }
 
-            if (MethodName.IsBinaryOperator(operatorType))
+            if (MethodName.IsBinaryOperator(operatorType)) {
                 return GetBinaryOperator(operatorType, this, this, this);
-            else
-                return GetUnaryOperator(operatorType, this, this);
+            }
+            return GetUnaryOperator(operatorType, this, this);
         }
 
         public MethodName GetConversionOperator(OperatorType operatorType,
@@ -411,8 +424,9 @@ namespace Carbonfrost.Commons.DotNet {
             }
 
             TypeName[] parms = null;
-            if (conversionType != null)
+            if (conversionType != null) {
                 parms = new [] { conversionType };
+            }
 
             return GetMethod("op_" + operatorType,
                              returnType,
@@ -424,8 +438,9 @@ namespace Carbonfrost.Commons.DotNet {
                                             TypeName leftOperandType,
                                             TypeName rightOperandType,
                                             TypeName resultType) {
-            if (!MethodName.IsBinaryOperator(operatorType))
+            if (!MethodName.IsBinaryOperator(operatorType)) {
                 throw DotNetFailure.BinaryOperatorRequired("operatorType", operatorType);
+            }
 
             string name = MethodName.GetOperator(operatorType);
             var result = new DefaultMethodName(this, name, resultType ?? this);
@@ -456,11 +471,13 @@ namespace Carbonfrost.Commons.DotNet {
                     throw DotNetFailure.UnaryOperatorExpected("operandType", operandType);
             }
 
-            if (resultType == null)
+            if (resultType == null) {
                 throw new ArgumentNullException("resultType");
+            }
 
-            if (operandType == null)
+            if (operandType == null) {
                 throw new ArgumentNullException("operandType");
+            }
 
             return GetMethod(name, resultType, null, new[] { operandType });
         }
@@ -470,10 +487,12 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public EventName GetEvent(string name, TypeName eventType) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
-            if (name.Length == 0)
+            }
+            if (name.Length == 0) {
                 throw Failure.EmptyString("name");
+            }
 
             return new EventName(this, name, SafeCloneBind(eventType));
         }
@@ -483,26 +502,32 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public FieldName GetField(string name, TypeName fieldType) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
-            if (name.Length == 0)
+            }
+            if (name.Length == 0) {
                 throw Failure.EmptyString("name");
+            }
 
             return new FieldName(this, name, SafeCloneBind(fieldType));
         }
 
         public static TypeName FromType(Type type) {
-            if (type == null)
+            if (type == null) {
                 throw new ArgumentNullException("type");
+            }
 
-            if (type.IsByRef)
+            if (type.IsByRef) {
                 return FromType(type.GetElementType()).MakeByReferenceType();
+            }
 
-            else if (type.IsArray)
+            else if (type.IsArray) {
                 return FromType(type.GetElementType()).MakeArrayType(Enumerable.Repeat(ArrayDimension.Unsized, type.GetArrayRank()));
+            }
 
-            else if (type.IsPointer)
+            else if (type.IsPointer) {
                 return FromType(type.GetElementType()).MakePointerType();
+            }
 
             else if (type.IsGenericParameter) {
                 if (type.GetTypeInfo().DeclaringMethod == null)
@@ -616,10 +641,10 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         internal static bool SafeMatch(TypeName a, TypeName b) {
-            if (a == null || b == null)
+            if (a == null || b == null) {
                 return true;
-            else
-                return a.Matches(b);
+            }
+            return a.Matches(b);
         }
 
         private TypeName SafeCloneBind(TypeName type) {

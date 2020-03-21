@@ -23,7 +23,7 @@ namespace Carbonfrost.Commons.DotNet {
 
     public class GenericParameterNameCollection : IReadOnlyList<GenericParameterName> {
 
-        public static GenericParameterNameCollection Empty = new GenericParameterNameCollection(Empty<GenericParameterName>.Array);
+        public static GenericParameterNameCollection Empty = new GenericParameterNameCollection(Array.Empty<GenericParameterName>());
 
         private readonly IReadOnlyList<GenericParameterName> _items;
 

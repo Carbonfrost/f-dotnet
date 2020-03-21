@@ -15,6 +15,8 @@
 //
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -24,18 +26,22 @@ using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public class Blob {
+    public sealed class Blob : IReadOnlyList<byte> {
 
         private readonly byte[] _data;
 
-        public static readonly Blob Empty = new Blob(Empty<byte>.Array);
+        public static readonly Blob Empty = new Blob(Array.Empty<byte>());
 
         public bool IsEmpty {
-            get { return Length == 0; }
+            get {
+                return Length == 0;
+            }
         }
 
         public int Length {
-            get { return _data.Length ;}
+            get {
+                return _data.Length;
+            }
         }
 
         public Blob Token {
@@ -46,6 +52,12 @@ namespace Carbonfrost.Commons.DotNet {
                 Array.Copy(result, result.Length - 8, sha1, 0, 8);
                 Array.Reverse(sha1);
                 return new Blob(sha1);
+            }
+        }
+
+        int IReadOnlyCollection<byte>.Count {
+            get {
+                return Length;
             }
         }
 
@@ -61,7 +73,7 @@ namespace Carbonfrost.Commons.DotNet {
                 throw new ArgumentNullException("data");
             }
 
-            this._data = data;
+            _data = data;
         }
 
         public byte[] ToByteArray() {
@@ -98,12 +110,10 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public override bool Equals(object obj) {
-            Blob other = obj as Blob;
-            if (other == null) {
-                return false;
+            if (obj is Blob other) {
+                return _data.Length == other.Length && _data.SequenceEqual(other._data);
             }
-
-            return _data.Length == other.Length && this._data.SequenceEqual(other._data);
+            return false;
         }
 
         public override int GetHashCode() {
@@ -163,18 +173,20 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public override string ToString() {
-            if (this._data.Length == 0) {
+            if (_data.Length == 0) {
                 return "null";
             }
             return string.Concat(_data.Select(t => t.ToString("x2")));
         }
 
         private static byte[] HexToBytes(string text) {
-            if (string.IsNullOrEmpty(text))
-                return Empty<byte>.Array;
+            if (string.IsNullOrEmpty(text)) {
+                return Array.Empty<byte>();
+            }
 
-            if ((text.Length % 2) == 1)
-                throw new ArgumentException();
+            if ((text.Length % 2) == 1) {
+                throw new FormatException();
+            }
 
             byte[] buffer = new byte[text.Length / 2];
             for (int i = 0; i < buffer.Length; i++) {
@@ -184,5 +196,12 @@ namespace Carbonfrost.Commons.DotNet {
             return buffer;
         }
 
+        public IEnumerator<byte> GetEnumerator() {
+            return ((IReadOnlyList<byte>) _data).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
     }
 }

@@ -35,104 +35,120 @@ namespace Carbonfrost.Commons.DotNet {
         internal static readonly MetadataNameFormat NameOverloadsFormat = new FullNameFormatImpl(true);
         internal static readonly MetadataNameFormat RoundtrippableFormat = new RoundtrippableFormatImpl();
 
-        private bool includeTypeConstraints;
-        private bool useGenericParameterPositions;
-        private bool includeTypeParameters;
-        private bool includeVariance;
-        private SymbolTypes includeReturnTypes = new SymbolTypes();
-        private SymbolTypes includeModifiers = new SymbolTypes();
-        private SymbolTypes includeAttributes = new SymbolTypes();
-        private readonly SymbolTypeMap<string> defaultFormat = new SymbolTypeMap<string>("G");
+        private bool _includeTypeConstraints;
+        private bool _useGenericParameterPositions;
+        private bool _includeTypeParameters;
+        private bool _includeVariance;
+        private SymbolTypes _includeReturnTypes = new SymbolTypes();
+        private SymbolTypes _includeModifiers = new SymbolTypes();
+        private SymbolTypes _includeAttributes = new SymbolTypes();
+        private readonly SymbolTypeMap<string> _defaultFormat = new SymbolTypeMap<string>("G");
 
         public SymbolTypeMap<string> DefaultFormatString {
-            get { return defaultFormat; }
+            get {
+                return _defaultFormat;
+            }
         }
 
         public SymbolTypes IncludeModifiers {
-            get { return includeModifiers; }
+            get {
+                return _includeModifiers;
+            }
             set {
                 ThrowIfReadOnly();
-                includeModifiers = value;
+                _includeModifiers = value;
             }
         }
 
         public SymbolTypes IncludeAttributes {
-            get { return includeAttributes; }
+            get {
+                return _includeAttributes;
+            }
             set {
                 ThrowIfReadOnly();
-                includeAttributes = value;
+                _includeAttributes = value;
             }
         }
 
         public bool IncludeTypeParameters {
             get {
-                return includeTypeParameters;
+                return _includeTypeParameters;
             }
             set {
                 ThrowIfReadOnly();
-                includeTypeParameters = value;
+                _includeTypeParameters = value;
             }
         }
 
         public SymbolTypes IncludeReturnTypes {
-            get { return includeReturnTypes; }
+            get {
+                return _includeReturnTypes;
+            }
             set {
                 ThrowIfReadOnly();
-                includeReturnTypes = value;
+                _includeReturnTypes = value;
             }
         }
 
         public bool IncludeTypeConstraints {
             get {
-                return includeTypeConstraints;
+                return _includeTypeConstraints;
             }
             set {
                 ThrowIfReadOnly();
-                includeTypeConstraints = value;
+                _includeTypeConstraints = value;
             }
         }
 
         public bool UseGenericParameterPositions {
-            get { return useGenericParameterPositions; }
+            get {
+                return _useGenericParameterPositions;
+            }
             set {
                 ThrowIfReadOnly();
-                useGenericParameterPositions = value;
+                _useGenericParameterPositions = value;
             }
         }
 
         public bool IncludeVariance {
-            get { return includeVariance; }
+            get {
+                return _includeVariance;
+            }
             set {
                 ThrowIfReadOnly();
-                includeVariance = value;
+                _includeVariance = value;
             }
         }
 
         internal MetadataNameFormat(bool dummy) {}
 
-        public MetadataNameFormat() : this(null) {}
+        public MetadataNameFormat() : this(null) {
+        }
 
         public MetadataNameFormat(MetadataNameFormat options) {
-            if (options == null)
+            if (options == null) {
                 options = MetadataNameFormat.Default;
+            }
 
-            this.DefaultFormatString.CopyBuffer(options.DefaultFormatString);
-            this.includeAttributes = options.IncludeAttributes.Clone();
-            this.includeModifiers = options.IncludeModifiers.Clone();
-            this.includeReturnTypes = options.IncludeReturnTypes.Clone();
-            this.includeTypeConstraints = options.IncludeTypeConstraints;
-            this.includeTypeParameters = options.IncludeTypeParameters;
-            this.includeVariance = options.IncludeVariance;
+            DefaultFormatString.CopyBuffer(options.DefaultFormatString);
+            _includeAttributes = options.IncludeAttributes.Clone();
+            _includeModifiers = options.IncludeModifiers.Clone();
+            _includeReturnTypes = options.IncludeReturnTypes.Clone();
+            _includeTypeConstraints = options.IncludeTypeConstraints;
+            _includeTypeParameters = options.IncludeTypeParameters;
+            _includeVariance = options.IncludeVariance;
         }
 
         public string Format(string format, MetadataName name, IFormatProvider formatProvider = null) {
-            if (name == null)
+            if (name == null) {
                 throw new ArgumentNullException("name");
+            }
 
             var options = this.GetFormatHelper(formatProvider);
 
-            if (string.IsNullOrEmpty(format))
+            if (string.IsNullOrEmpty(format)) {
                 format = options.DefaultFormatString[name.SymbolType] ?? "G";
+            }
 
             return name.Accept(this, format, options);
         }
@@ -162,23 +178,26 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         protected internal virtual string FormatArrayType(string format, ArrayTypeName name, IFormatProvider formatProvider) {
-            if (name == null)
-                throw new ArgumentNullException("name");
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
 
             // TODO Support formatting arrays with sizes
             return Format(format, name.ElementType, formatProvider) + "[]";
         }
 
         protected internal virtual string FormatByReferenceType(string format, ByReferenceTypeName name, IFormatProvider formatProvider) {
-            if (name == null)
-                throw new ArgumentNullException("name");
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
 
             return Format(format, name.ElementType, formatProvider) + "&";
         }
 
         protected internal virtual string FormatType(string format, TypeName name, IFormatProvider formatProvider) {
-            if (name == null)
-                throw new ArgumentNullException("name");
+            if (name == null) {
+                throw new ArgumentNullException(nameof(name));
+            }
 
             var dtn = (DefaultTypeName) name;
             var basic = GetBasicFormat(format);
@@ -630,8 +649,9 @@ namespace Carbonfrost.Commons.DotNet {
                 buffer.Append('<');
                 bool needComma = false;
                 foreach (var s in types) {
-                    if (needComma)
+                    if (needComma) {
                         buffer.Append(", ");
+                    }
 
                     buffer.Append(s.ToString(defaultFormat, this));
                     needComma = true;

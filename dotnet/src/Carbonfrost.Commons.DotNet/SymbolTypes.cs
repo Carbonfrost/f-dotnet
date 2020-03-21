@@ -1,11 +1,11 @@
 //
-// Copyright 2013 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,10 +22,12 @@ namespace Carbonfrost.Commons.DotNet {
 
     public class SymbolTypes : SymbolTypeMap<bool> {
 
-        public SymbolTypes() {}
+        public SymbolTypes() {
+        }
 
-        public SymbolTypes(bool value)
-            : base(value) {}
+        public SymbolTypes(bool value) : base(value) {
+
+        }
 
         private SymbolTypes(IEnumerable<bool> values) : base(values) {
         }
@@ -62,12 +64,12 @@ namespace Carbonfrost.Commons.DotNet {
             result = null;
 
             if (text == null) {
-                return new ArgumentNullException("text");
+                return new ArgumentNullException(nameof(text));
             }
 
             text = text.Trim();
             if (text.Length == 0) {
-                return Failure.AllWhitespace("text");
+                return Failure.AllWhitespace(nameof(text));
             }
             if (text == "All") {
                 result = new SymbolTypes(true);
@@ -87,7 +89,7 @@ namespace Carbonfrost.Commons.DotNet {
                     result[symbol] = true;
 
                 } else {
-                    return Failure.NotParsable("text", typeof(SymbolTypes));
+                    return Failure.NotParsable(nameof(text), typeof(SymbolTypes));
                 }
             }
 
@@ -106,12 +108,8 @@ namespace Carbonfrost.Commons.DotNet {
             return string.Join(" ", this.Where(t => t.Value).Select(t => t.Key));
         }
 
-        protected override SymbolTypeMap<bool> CloneCore() {
-            return base.CloneCore();
-        }
-
         public new SymbolTypes Clone() {
-            return new SymbolTypes(this.Values);
+            return new SymbolTypes(Values);
         }
     }
 

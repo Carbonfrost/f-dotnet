@@ -222,7 +222,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         internal TypeParameters ParseTypeParametersOpt() {
             if (_s.Type != TokenType.LessThan) {
-                return new TypeParameters(Empty<TypeName>.Array);
+                return new TypeParameters(Array.Empty<TypeName>());
             }
             var result = new List<TypeName>();
             bool first = true;

@@ -179,7 +179,7 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public MethodName RemoveParameters() {
-            return WithParameters(Empty<ParameterName>.Array);
+            return WithParameters(Array.Empty<ParameterName>());
         }
 
         public MethodName WithParametersUnspecified() {

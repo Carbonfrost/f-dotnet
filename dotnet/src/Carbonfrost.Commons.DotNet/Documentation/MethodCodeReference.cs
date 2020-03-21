@@ -33,7 +33,7 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
 
         public static ParameterData[] SplitParameters(string parametersText, GenericNameContext context) {
             if (parametersText.Length == 0) {
-                return Empty<ParameterData>.Array;
+                return Array.Empty<ParameterData>();
             }
 
             var list = new List<ParameterData>();
@@ -58,7 +58,7 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
             if (string.IsNullOrWhiteSpace(text) || !TryParseHelper(text, out result)) {
                 return new InvalidCodeReference(SymbolType.Field, text);
             }
-            
+
             return new MethodCodeReference(text, result);
         }
 
@@ -71,7 +71,7 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
             string parameters;
 
             // LAMESPEC - though only op_Explicit and op_Implict are meant to be encoded
-            // using the tilde, we have observed it is uncommon. It is more common to encode 
+            // using the tilde, we have observed it is uncommon. It is more common to encode
             // using the `to` syntax.  We also allow this return type tilde syntax to be used
             // on _any_ method though .NET doesn't consider return type in method signatures
             int tilde = text.LastIndexOf('~');
@@ -91,7 +91,7 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
             int mangle;
             string rawName = SplitRawNameFromMangle(name, out mangle);
             TypeName rt;
-            ParameterData[] pms;            
+            ParameterData[] pms;
             TypeName type = null;
             if (declaring.Length == 0 || TypeName.TryParse(declaring, out type)) {
                 DefaultMethodName s = new DefaultMethodName(type, rawName);
@@ -139,7 +139,9 @@ namespace Carbonfrost.Commons.DotNet.Documentation {
         }
 
         public override SymbolType SymbolType {
-            get { return SymbolType.Method; } 
+            get {
+                return SymbolType.Method;
+            }
         }
 
         internal static string FormatMethod(MethodName name) {

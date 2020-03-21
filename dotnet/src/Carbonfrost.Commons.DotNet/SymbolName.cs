@@ -1,11 +1,11 @@
 //
-// Copyright 2013, 2017 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2013, 2017, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,9 @@ using Carbonfrost.Commons.Core;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public sealed class SymbolName {
+    public readonly struct SymbolName {
+
+        private readonly Flags _flags;
 
         private readonly FieldName _field;
         private readonly PropertyName _property;
@@ -32,37 +34,79 @@ namespace Carbonfrost.Commons.DotNet {
         private readonly AssemblyName _assembly;
 
         private readonly String _text;
-        private SymbolTypes _typesCache;
 
-        internal SymbolName(string text, out bool success) {
+        internal SymbolName(string text) {
             _text = text;
-            success = false;
-            success |= MethodName.TryParse(text, out _method);
-            success |= FieldName.TryParse(text, out _field);
-            success |= PropertyName.TryParse(text, out _property);
-            success |= EventName.TryParse(text, out _event);
-            success |= TypeName.TryParse(text, out _type);
-            success |= ModuleName.TryParse(text, out _module);
-            success |= AssemblyName.TryParse(text, out _assembly);
-            success |= NamespaceName.TryParse(text, out _namespace);
+            _flags = (MethodName.TryParse(text, out _method) ? Flags.MethodName : 0)
+                | (FieldName.TryParse(text, out _field) ? Flags.FieldName : 0)
+                | (PropertyName.TryParse(text, out _property) ? Flags.PropertyName : 0)
+                | (EventName.TryParse(text, out _event) ? Flags.EventName : 0)
+                | (TypeName.TryParse(text, out _type) ? Flags.TypeName : 0)
+                | (ModuleName.TryParse(text, out _module) ? Flags.ModuleName : 0)
+                | (AssemblyName.TryParse(text, out _assembly) ? Flags.AssemblyName : 0)
+                | (NamespaceName.TryParse(text, out _namespace) ? Flags.NamespaceName : 0);
         }
 
-        public bool IsAssembly { get { return Assembly != null; } }
-        public bool IsEvent { get { return Event != null; } }
-        public bool IsField { get { return Field != null; } }
-        public bool IsMethod { get { return Method != null; } }
-        public bool IsModule { get { return Module != null; } }
-        public bool IsNamespace { get { return Namespace != null; } }
-        public bool IsProperty { get { return Property != null; } }
-        public bool IsType { get { return Type != null; } }
+        public bool IsAssembly {
+            get {
+                return _flags.HasFlag(Flags.AssemblyName);
+            }
+        }
+
+        public bool IsEvent {
+            get {
+                return _flags.HasFlag(Flags.EventName);
+            }
+        }
+
+        public bool IsField {
+            get {
+                return _flags.HasFlag(Flags.FieldName);
+            }
+        }
+
+        public bool IsMethod {
+            get {
+                return _flags.HasFlag(Flags.MethodName);
+            }
+        }
+
+        public bool IsModule {
+            get {
+                return _flags.HasFlag(Flags.ModuleName);
+            }
+        }
+
+        public bool IsNamespace {
+            get {
+                return _flags.HasFlag(Flags.NamespaceName);
+            }
+        }
+
+        public bool IsProperty {
+            get {
+                return _flags.HasFlag(Flags.PropertyName);
+            }
+        }
+
+        public bool IsType {
+            get {
+                return _flags.HasFlag(Flags.TypeName);
+            }
+        }
 
         public SymbolTypes SymbolTypes {
             get {
-                if (_typesCache == null) {
-                    _typesCache = GenerateSymbolTypes();
-                }
-
-                return _typesCache;
+                return new SymbolTypes(false) {
+                    Assembly = IsAssembly,
+                    Event = IsEvent,
+                    Field = IsField,
+                    Method = IsMethod,
+                    Module = IsModule,
+                    Namespace = IsNamespace,
+                    Property = IsProperty,
+                    Type = IsType,
+                };
             }
         }
 
@@ -115,7 +159,9 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public string OriginalString {
-            get { return _text; }
+            get {
+                return _text;
+            }
         }
 
         public override string ToString() {
@@ -164,47 +210,39 @@ namespace Carbonfrost.Commons.DotNet {
                 case SymbolType.Attribute:
                 case SymbolType.Unknown:
                 case SymbolType.Label:
-                    // throw DotNetFailure.CannotConvertToSymbolType("type", type);
+                    throw DotNetFailure.CannotConvertToSymbolType(nameof(type), type);
+
                 default:
-                    throw Failure.NotDefinedEnum("type", type);
+                    throw Failure.NotDefinedEnum(nameof(type), type);
             }
-        }
-
-        private SymbolTypes GenerateSymbolTypes() {
-            SymbolTypes result = new SymbolTypes(false);
-
-            result.Assembly = IsAssembly;
-            result.Event = IsEvent;
-            result.Field = IsField;
-            result.Method = IsMethod;
-            result.Module = IsModule;
-            result.Namespace = IsNamespace;
-            result.Property = IsProperty;
-            result.Type = IsType;
-
-            result.MakeReadOnly();
-            return result;
         }
 
         static Exception _TryParse(string text, out SymbolName result) {
-            result = null;
+            result = default(SymbolName);
 
             if (text == null) {
-                return new ArgumentNullException("text");
+                return new ArgumentNullException(nameof(text));
             }
             if (text.Length == 0) {
-                return Failure.EmptyString("text");
+                return Failure.EmptyString(nameof(text));
             }
+            result = new SymbolName(text);
 
-            bool success;
-            result = new SymbolName(text, out success);
-
-            if (success) {
-                return null;
-            } else {
-                return Failure.NotParsable("text", typeof(SymbolName));
+            if (result._flags == 0) {
+                return Failure.NotParsable(nameof(text), typeof(SymbolName));
             }
+            return null;
         }
 
+        enum Flags {
+            FieldName = 1 << 1,
+            PropertyName = 1 << 2,
+            EventName = 1 << 3,
+            MethodName = 1 << 4,
+            TypeName = 1 << 5,
+            NamespaceName = 1 << 6,
+            ModuleName = 1 << 7,
+            AssemblyName = 1 << 8,
+        }
     }
 }

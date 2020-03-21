@@ -168,7 +168,7 @@ namespace Carbonfrost.Commons.DotNet {
 
         internal void FinalizeGenerics(GenericParameterName[] names, bool includesEnclosing = false) {
             if (names == null) {
-                _genericParameters = new GenericParameterNameCollection(Empty<GenericParameterName>.Array);
+                _genericParameters = new GenericParameterNameCollection(Array.Empty<GenericParameterName>());
             } else {
                 _genericParameters = new GenericParameterNameCollection(names);
             }
