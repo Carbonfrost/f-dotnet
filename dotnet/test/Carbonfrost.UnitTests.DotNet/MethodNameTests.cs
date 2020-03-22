@@ -1,11 +1,11 @@
 //
-// Copyright 2016 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,10 +14,9 @@
 // limitations under the License.
 //
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.DotNet;
 
@@ -102,6 +101,7 @@ namespace Carbonfrost.UnitTests.DotNet {
             var newMethod = method.WithParametersUnspecified();
             Assert.False(newMethod.HasParametersSpecified);
             Assert.Equal("TryParse", newMethod.ToString());
+            Assert.NotNull(newMethod.Parameters);
         }
 
         [Fact]
@@ -116,6 +116,17 @@ namespace Carbonfrost.UnitTests.DotNet {
             format.IncludeReturnTypes.All = true;
 
             Assert.Equal("Create<TFirst, TSecond>(TFirst, TSecond):TSecond", newMethod.ToString(format));
+        }
+
+        [XFact(Reason = "spec")]
+        public void SetGenericParameter_with_positional_arguments_left_over() {
+            var method = MethodName.Parse("Create``2(``0,``1)");
+
+            var newMethod = method.SetGenericParameter(0, "TFirst");
+            Assert.Equal("Create", newMethod.Name);
+            Assert.Equal(2, method.GenericParameterCount);
+
+            Assert.Equal("Create<TFirst,>(TFirst, ``1)", newMethod.ToString());
         }
 
         [Fact]
@@ -321,6 +332,12 @@ namespace Carbonfrost.UnitTests.DotNet {
             var a = MethodName.Create("Hello");
             var b = MethodName.Parse("Hello");
             Assert.Equal(a, b);
+        }
+
+        [Fact]
+        public void ParameterTypes_will_obtain_the_value() {
+            var a = MethodName.Parse("String(Int32,Int64)");
+            Assert.Equal("Int64", a.ParameterTypes[1].Name);
         }
     }
 }

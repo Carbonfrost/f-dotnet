@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Carbonfrost.Commons.DotNet {
 
@@ -38,6 +39,15 @@ namespace Carbonfrost.Commons.DotNet {
         public bool IsIndexerParameter {
             get {
                 return DeclaringProperty != null;
+            }
+        }
+
+        public bool IsByReference {
+            get {
+                if (ParameterType == null) {
+                    return false;
+                }
+                return ParameterType.IsByReference;
             }
         }
 
@@ -74,6 +84,20 @@ namespace Carbonfrost.Commons.DotNet {
             get {
                 return Modifiers.OptionalModifiers;
             }
+        }
+
+        public static ParameterName FromParameterInfo(ParameterInfo parameter) {
+            if (parameter == null) {
+                throw new ArgumentNullException(nameof(parameter));
+            }
+            var member = MemberName.FromMemberInfo(parameter.Member);
+            switch (member) {
+                case MethodName method:
+                    return method.Parameters[parameter.Position];
+                case PropertyName prop:
+                    return prop.IndexParameters[parameter.Position];
+            }
+            return null;
         }
 
         internal static bool MatchHelper(INameWithParameters name, INameWithParameters other) {

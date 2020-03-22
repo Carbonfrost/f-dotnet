@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -216,6 +217,44 @@ namespace Carbonfrost.Commons.DotNet {
         public abstract GenericParameterNameCollection GenericParameters { get; }
         public abstract ParameterNameCollection Parameters { get; }
         public abstract bool HasParametersSpecified { get; }
+
+        public IReadOnlyList<TypeName> ParameterTypes {
+            get {
+                return new View<ParameterName, TypeName>(Parameters, p => p.ParameterType);
+            }
+        }
+
+        struct View<TFrom, TTo> : IReadOnlyList<TTo> {
+            private IReadOnlyList<TFrom> _items;
+            private Func<TFrom, TTo> _p;
+
+            public View(IReadOnlyList<TFrom> items, Func<TFrom, TTo> conversion) {
+                _items = items;
+                _p = conversion;
+            }
+
+            public TTo this[int index] {
+                get {
+                    return _p(_items[index]);
+                }
+            }
+
+            public int Count {
+                get {
+                    return _items.Count;
+                }
+            }
+
+            public IEnumerator<TTo> GetEnumerator() {
+                foreach (var p in _items) {
+                    yield return _p(p);
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() {
+                return GetEnumerator();
+            }
+        }
 
         public GenericInstanceMethodName MakeGenericMethod(params Type[] types) {
             return MakeGenericMethod(CheckArgs(types).Select(t => TypeName.FromType(t)));

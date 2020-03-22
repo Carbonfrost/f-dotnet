@@ -26,10 +26,20 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         internal delegate Exception TryParser<T>(string text, out T result);
+        internal delegate Exception TryExactParser<T>(string text, string format, out T result);
 
         public static T Parse<T>(string text, TryParser<T> tryParse) {
             T result;
             Exception ex = tryParse(text, out result);
+            if (ex == null) {
+                return result;
+            }
+            throw ex;
+        }
+
+        public static T Parse<T>(string text, string format, TryExactParser<T> tryParse) {
+            T result;
+            Exception ex = tryParse(text, format, out result);
             if (ex == null) {
                 return result;
             }

@@ -1,11 +1,11 @@
 //
-// Copyright 2016, 2014 Carbonfrost Systems, Inc. (http://carbonfrost.com)
+// Copyright 2014, 2016, 2020 Carbonfrost Systems, Inc. (https://carbonfrost.com)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//     https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
+
 using Carbonfrost.Commons.Spec;
 using Carbonfrost.Commons.DotNet;
 
@@ -158,7 +158,7 @@ namespace Carbonfrost.UnitTests.DotNet {
 
             // proof, for reference:
             var args = s.GetType().GetTypeInfo().GetGenericArguments();
-            Assert.Equal(new [] { typeof(int), typeof(long), typeof(string), typeof(string) }, args);
+            Assume.Equal(new [] { typeof(int), typeof(long), typeof(string), typeof(string) }, args);
 
             var t = (GenericInstanceTypeName) TypeName.FromType(s.GetType());
             Assert.HasCount(4, t.GenericArguments);
@@ -171,14 +171,22 @@ namespace Carbonfrost.UnitTests.DotNet {
             var ti = typeof(C<,>.D<,>).GetTypeInfo();
             TypeName name = TypeName.FromType(typeof(C<,>.D<,>));
             // proof, for reference:
-            Assert.HasCount(4, ti.GetGenericArguments());
-            Assert.Equal("D`2", ti.Name);
-            Assert.Equal("Carbonfrost.UnitTests.DotNet.TypeNameTests+C`2+D`2", ti.FullName);
+            Assume.HasCount(4, ti.GetGenericArguments());
+            Assume.Equal("D`2", ti.Name);
+            Assume.Equal("Carbonfrost.UnitTests.DotNet.TypeNameTests+C`2+D`2", ti.FullName);
 
             Assert.True(name.IsGenericType);
             Assert.True(name.IsGenericTypeDefinition);
             Assert.Equal("Carbonfrost.UnitTests.DotNet.TypeNameTests+C`2+D`2", name.FullName);
             Assert.Equal(4, name.GenericParameterCount); // inherited generics
+        }
+
+        [XFact(Reason = "missing spec")]
+        public void MakeGenericType_should_produce_correct_closed_generics_and_FullName() {
+            var ti = typeof(C<,>.D<,>).GetTypeInfo();
+            TypeName nestedType = TypeName.FromType(typeof(C<,>.D<,>));
+            TypeName closed = nestedType.MakeGenericType(TypeName.Int32, TypeName.String, TypeName.Int32, TypeName.Int16);
+            Assert.Equal("Carbonfrost.UnitTests.DotNet.TypeNameTests+C`2+D<Int32, String, Int32, Int16>", closed.FullName);
         }
 
         [Fact]

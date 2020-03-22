@@ -21,12 +21,13 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Carbonfrost.Commons.Core;
 using Carbonfrost.Commons.Core.Runtime;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public sealed class Blob : IReadOnlyList<byte> {
+    public sealed class Blob : IReadOnlyList<byte>, IFormattable {
 
         private readonly byte[] _data;
 
@@ -144,6 +145,10 @@ namespace Carbonfrost.Commons.DotNet {
             return Utility.Parse<Blob>(text, _TryParse);
         }
 
+        public static Blob ParseExact(string text, string format) {
+            return Utility.Parse<Blob>(text, format, _TryParseExact);
+        }
+
         public static bool TryParse(string text, out Blob result) {
             return _TryParse(text, out result) == null;
         }
@@ -155,17 +160,74 @@ namespace Carbonfrost.Commons.DotNet {
                     result = Blob.Empty;
                     return null;
                 }
-
-                try {
-                    byte[] data = HexToBytes(text);
-                    result = new Blob(data);
+                if (_TryParseHex(text, out result)) {
                     return null;
-                } catch (FormatException) {
+                }
+                if (_TryParseBase64(text, out result)) {
+                    return null;
                 }
             }
 
             result = null;
-            return Failure.NotParsable("text", typeof(Blob));
+            return Failure.NotParsable(nameof(text), typeof(Blob));
+        }
+
+        static Exception _TryParseExact(string text, string format, out Blob result) {
+            if (format == null) {
+                format = "G";
+            }
+            if (format.Length != 1) {
+                throw new FormatException();
+            }
+            result = null;
+            switch (format[0]) {
+                case 'g':
+                case 'G':
+                    return _TryParse(text, out result);
+                case 'x':
+                    return Wrap(AllLowercase(text) && _TryParseHex(text, out result));
+                case 'X':
+                    return Wrap(AllUppercase(text) && _TryParseHex(text, out result));
+                case 'z':
+                    return Wrap(NoWhitespace(text) && _TryParseBase64(text, out result));
+                case 'Z':
+                    return Wrap(_TryParseBase64(text, out result));
+            }
+            throw new FormatException();
+        }
+
+        private static bool NoWhitespace(string text) {
+            return !Regex.IsMatch(text, @"\s");
+        }
+
+        private static bool AllUppercase(string text) {
+            return Regex.IsMatch(text, @"\p{Lu}");
+        }
+
+        private static bool AllLowercase(string text) {
+            return Regex.IsMatch(text, @"\p{Ll}");
+        }
+
+        private static bool _TryParseBase64(string text, out Blob result) {
+            try {
+                byte[] data = Convert.FromBase64String(text);
+                result = new Blob(data);
+                return true;
+            } catch (FormatException) {
+                result = null;
+                return false;
+            }
+        }
+
+        private static bool _TryParseHex(string text, out Blob result) {
+            try {
+                byte[] data = HexToBytes(text);
+                result = new Blob(data);
+                return true;
+            } catch (FormatException) {
+                result = null;
+                return false;
+            }
         }
 
         public Stream OpenRead() {
@@ -173,10 +235,7 @@ namespace Carbonfrost.Commons.DotNet {
         }
 
         public override string ToString() {
-            if (_data.Length == 0) {
-                return "null";
-            }
-            return string.Concat(_data.Select(t => t.ToString("x2")));
+            return ToGeneralString();
         }
 
         private static byte[] HexToBytes(string text) {
@@ -202,6 +261,56 @@ namespace Carbonfrost.Commons.DotNet {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public string ToString(string format) {
+            return ToString(format, null);
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider) {
+            if (format == null) {
+                format = "G";
+            }
+            if (format.Length != 1) {
+                throw new FormatException();
+            }
+            switch (format[0]) {
+                case 'g':
+                case 'G':
+                    return ToGeneralString();
+                case 'x':
+                    return ToHexString(false);
+                case 'X':
+                    return ToHexString(true);
+                case 'z':
+                    return ToBase64String(false);
+                case 'Z':
+                    return ToBase64String(true);
+            }
+            throw new FormatException();
+        }
+
+        private string ToBase64String(bool breaks) {
+            return Convert.ToBase64String(_data, breaks ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None);
+        }
+
+        private string ToGeneralString() {
+            if (_data.Length == 0) {
+                return "null";
+            }
+            return ToHexString(false);
+        }
+
+        private string ToHexString(bool upper) {
+            var format = upper ? "X2" : "x2";
+            return string.Concat(_data.Select(t => t.ToString(format)));
+        }
+
+        private static Exception Wrap(bool result) {
+            if (result) {
+                return null;
+            }
+            return Failure.NotParsable("text", typeof(Blob));
         }
     }
 }
