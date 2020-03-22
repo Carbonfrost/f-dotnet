@@ -164,14 +164,6 @@ namespace Carbonfrost.Commons.DotNet {
             return result;
         }
 
-        public override MethodName SetGenericParameter(int index, string name) {
-            return WithGenericParameters(ImmutableUtility.Set(
-                _genericParameters,
-                index,
-                (t, _) => t.Clone(),
-                GenericParameterName.New(this, index, name)));
-        }
-
         internal override MethodName WithParameters(ParameterName[] pms) {
             return new DefaultMethodName(DeclaringType, _name) {
                 _parameters = pms == null ? null : new ParameterNameCollection(pms),
@@ -188,9 +180,9 @@ namespace Carbonfrost.Commons.DotNet {
             };
         }
 
-        private MethodName WithGenericParameters(GenericParameterName[] pms) {
+        internal override MethodName WithGenericParameters(GenericParameterName[] parameters) {
             var result = new DefaultMethodName(DeclaringType, _name);
-            result.FinalizeGenerics(pms);
+            result.FinalizeGenerics(parameters);
             result.FinalizeParameters(ParameterData.AsData(_parameters).ToArray());
 
             if (ReturnType != null) {

@@ -97,5 +97,25 @@ namespace Carbonfrost.Commons.DotNet {
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
+
+        internal GenericParameterName[] ImmutableRemoveAt(int index, Func<GenericParameterName, int, GenericParameterName> cloneParameter) {
+            return ImmutableUtility.RemoveAt(this, index, cloneParameter);
+        }
+
+        internal GenericParameterName[] ImmutableRemove(GenericParameterName parameter, Func<GenericParameterName, int, GenericParameterName> cloneParameter) {
+            return ImmutableUtility.Remove(this, parameter, cloneParameter);
+        }
+
+        internal GenericParameterName[] ImmutableInsertAt(int index, GenericParameterName item, Func<GenericParameterName, int, GenericParameterName> cloneParameter) {
+            return ImmutableUtility.Insert(this, index, cloneParameter, item);
+        }
+
+        internal GenericParameterName[] ImmutableSet(int index, GenericParameterName item, Func<GenericParameterName, int, GenericParameterName> cloneParameter) {
+            return ImmutableUtility.Set(this, index, cloneParameter, item);
+        }
+
+        internal GenericParameterName[] ImmutableAdd(GenericParameterName item, Func<GenericParameterName, int, GenericParameterName> cloneParameter) {
+            return ImmutableUtility.Add(this, cloneParameter, item);
+        }
     }
 }

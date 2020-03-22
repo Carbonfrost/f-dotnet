@@ -199,8 +199,6 @@ namespace Carbonfrost.Commons.DotNet {
             return WithReturnParameter(returnType, null, null);
         }
 
-        public abstract MethodName SetGenericParameter(int index, string name);
-
         protected override MemberName WithAssemblyOverride(AssemblyName assembly) {
             return WithDeclaringType(DeclaringType.WithAssembly(assembly));
         }
