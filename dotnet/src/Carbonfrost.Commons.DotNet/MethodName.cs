@@ -20,7 +20,7 @@ using System.Text.RegularExpressions;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public abstract partial class MethodName : MemberName, INameWithParameters  {
+    public abstract partial class MethodName : MemberName, INameWithParameters<MethodName> {
 
         public TypeName ReturnType {
             get {
@@ -160,10 +160,7 @@ namespace Carbonfrost.Commons.DotNet {
                                        IEnumerable<TypeName> requiredModifiers,
                                        IEnumerable<TypeName> optionalModifiers) {
             var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
-            return WithParameters(ImmutableUtility.Add(
-                Parameters,
-                (t, i) => new DefaultParameterName(this, i, t.Name, t.ParameterType, t.Modifiers),
-                new DefaultParameterName(this, Parameters.Count, name, parameterType, modifiers)));
+            return WithParameters(Parameters.ImmutableAdd(new DefaultParameterName(this, Parameters.Count, name, parameterType, modifiers), CloneParameter));
         }
 
         public MethodName SetParameter(int index, string name, TypeName parameterType) {
@@ -174,13 +171,12 @@ namespace Carbonfrost.Commons.DotNet {
             string name,
             TypeName parameterType,
             IEnumerable<TypeName> requiredModifiers,
-            IEnumerable<TypeName> optionalModifiers) {
+            IEnumerable<TypeName> optionalModifiers
+        ) {
             var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
-            return WithParameters(ImmutableUtility.Set(
-                Parameters,
-                index,
-                (t, i) => new DefaultParameterName(this, i, t.Name, t.ParameterType, t.Modifiers),
-                new DefaultParameterName(this, index, name, parameterType, modifiers)));
+            return WithParameters(
+                Parameters.ImmutableSet(index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter)
+            );
         }
 
         public MethodName RemoveParameters() {
@@ -327,6 +323,43 @@ namespace Carbonfrost.Commons.DotNet {
             return names.Where(n => Name.StartsWith(n, StringComparison.Ordinal))
                         .Select(n => factory(Name.Substring(n.Length)))
                         .FirstOrDefault();
+        }
+
+        public MethodName RemoveParameterAt(int index) {
+            return WithParameters(Parameters.ImmutableRemoveAt(index, CloneParameter));
+        }
+
+        public MethodName RemoveParameter(ParameterName parameter) {
+            return WithParameters(Parameters.ImmutableRemove(parameter, CloneParameter));
+        }
+
+        public MethodName InsertParameterAt(int index, string name) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, null, null), CloneParameter
+            ));
+        }
+
+        public MethodName InsertParameterAt(int index, TypeName parameterType) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, parameterType, null), CloneParameter
+            ));
+        }
+
+        public MethodName InsertParameterAt(int index, string name, TypeName parameterType) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, null), CloneParameter
+            ));
+        }
+
+        public MethodName InsertParameterAt(int index, string name, TypeName parameterType, IEnumerable<TypeName> requiredModifiers, IEnumerable<TypeName> optionalModifiers) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter
+            ));
+        }
+
+        private ParameterName CloneParameter(ParameterName t, int index) {
+            return new DefaultParameterName(this, index, t.Name, t.ParameterType, t.Modifiers);
         }
     }
 }

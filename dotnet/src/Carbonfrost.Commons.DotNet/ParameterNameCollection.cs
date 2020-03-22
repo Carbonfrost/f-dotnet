@@ -136,5 +136,25 @@ namespace Carbonfrost.Commons.DotNet {
         bool ICollection<ParameterName>.Remove(ParameterName item) {
             throw Failure.ReadOnlyCollection();
         }
+
+        internal ParameterName[] ImmutableRemoveAt(int index, Func<ParameterName, int, ParameterName> cloneParameter) {
+            return ImmutableUtility.RemoveAt(this, index, cloneParameter);
+        }
+
+        internal ParameterName[] ImmutableRemove(ParameterName parameter, Func<ParameterName, int, ParameterName> cloneParameter) {
+            return ImmutableUtility.Remove(this, parameter, cloneParameter);
+        }
+
+        internal ParameterName[] ImmutableInsertAt(int index, ParameterName item, Func<ParameterName, int, ParameterName> cloneParameter) {
+            return ImmutableUtility.Insert(this, index, cloneParameter, item);
+        }
+
+        internal ParameterName[] ImmutableSet(int index, ParameterName item, Func<ParameterName, int, ParameterName> cloneParameter) {
+            return ImmutableUtility.Set(this, index, cloneParameter, item);
+        }
+
+        internal ParameterName[] ImmutableAdd(ParameterName item, Func<ParameterName, int, ParameterName> cloneParameter) {
+            return ImmutableUtility.Add(this, cloneParameter, item);
+        }
     }
 }

@@ -85,6 +85,15 @@ namespace Carbonfrost.UnitTests.DotNet {
         }
 
         [Theory]
+        [InlineData(0, "TryParse(B)")]
+        [InlineData(1, "TryParse(A)")]
+        public void RemoveParameterAt_should_remove_specified_index(int index, string expected) {
+            var method = MethodName.Parse("TryParse(A,B)");
+            var newMethod = method.RemoveParameterAt(index);
+            Assert.Equal(expected, newMethod.ToString());
+        }
+
+        [Theory]
         [InlineData("TryParse()")]
         [InlineData("TryParse")]
         [InlineData("TryParse(String)")]

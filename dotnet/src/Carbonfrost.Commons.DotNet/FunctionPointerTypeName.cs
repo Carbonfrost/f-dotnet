@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace Carbonfrost.Commons.DotNet {
 
-    public sealed class FunctionPointerTypeName : TypeName, INameWithParameters {
+    public sealed class FunctionPointerTypeName : TypeName, INameWithParameters<FunctionPointerTypeName> {
 
         private readonly ParameterNameCollection _parms;
         private readonly TypeName _returnType;
@@ -91,6 +91,89 @@ namespace Carbonfrost.Commons.DotNet {
             get {
                 return GenericParameterNameCollection.Empty;
             }
+        }
+
+        public FunctionPointerTypeName AddParameter(string name) {
+            return AddParameter(name, (TypeName) null);
+        }
+
+        public FunctionPointerTypeName AddParameter(TypeName parameterType) {
+            return AddParameter(null, parameterType);
+        }
+
+        public FunctionPointerTypeName AddParameter(string name, TypeName parameterType) {
+            return AddParameter(name, parameterType, null, null);
+        }
+
+        public FunctionPointerTypeName AddParameter(string name,
+                                       TypeName parameterType,
+                                       IEnumerable<TypeName> requiredModifiers,
+                                       IEnumerable<TypeName> optionalModifiers) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithParameters(Parameters.ImmutableAdd(
+                new DefaultParameterName(this, Parameters.Count, name, parameterType, modifiers), CloneParameter
+            ));
+        }
+
+        public FunctionPointerTypeName RemoveParameters() {
+            return WithParameters(Array.Empty<ParameterName>());
+        }
+
+        public FunctionPointerTypeName RemoveParameterAt(int index) {
+            return WithParameters(Parameters.ImmutableRemoveAt(index, CloneParameter));
+        }
+
+        public FunctionPointerTypeName RemoveParameter(ParameterName parameter) {
+            return WithParameters(Parameters.ImmutableRemove(parameter, CloneParameter));
+        }
+
+        public FunctionPointerTypeName InsertParameterAt(int index, string name) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, null, null), CloneParameter
+            ));
+        }
+
+        public FunctionPointerTypeName InsertParameterAt(int index, TypeName parameterType) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, parameterType, null), CloneParameter
+            ));
+        }
+
+        public FunctionPointerTypeName InsertParameterAt(int index, string name, TypeName parameterType) {
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, null), CloneParameter
+            ));
+        }
+
+        public FunctionPointerTypeName InsertParameterAt(int index, string name, TypeName parameterType, IEnumerable<TypeName> requiredModifiers, IEnumerable<TypeName> optionalModifiers) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithParameters(Parameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter
+            ));
+        }
+
+        public FunctionPointerTypeName SetParameter(int index, string name, TypeName parameterType) {
+            return SetParameter(index, name, parameterType, null, null);
+        }
+
+        public FunctionPointerTypeName SetParameter(int index,
+            string name,
+            TypeName parameterType,
+            IEnumerable<TypeName> requiredModifiers,
+            IEnumerable<TypeName> optionalModifiers
+        ) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithParameters(
+                Parameters.ImmutableSet(index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter)
+            );
+        }
+
+        private FunctionPointerTypeName WithParameters(ParameterName[] items) {
+            return new FunctionPointerTypeName(items, ReturnType);
+        }
+
+        private ParameterName CloneParameter(ParameterName t, int index) {
+            return new DefaultParameterName(this, index, t.Name, t.ParameterType, t.Modifiers);
         }
     }
 }

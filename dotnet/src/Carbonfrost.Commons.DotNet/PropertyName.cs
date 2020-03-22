@@ -14,6 +14,7 @@
 // limitations under the License.
 //
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Carbonfrost.Commons.Core;
@@ -33,6 +34,15 @@ namespace Carbonfrost.Commons.DotNet {
             PropertyType = propertyType;
             _parameters = ParameterData.ToArray(this, parameters)
                 ?? ParameterNameCollection.Empty;
+        }
+
+        private PropertyName(TypeName declaringType,
+                             string name,
+                             TypeName propertyType,
+                             ParameterName[] parameters) : base(declaringType) {
+            _name = name;
+            PropertyType = propertyType;
+            _parameters = new ParameterNameCollection(parameters);
         }
 
         internal PropertyName(TypeName declaringType,
@@ -104,6 +114,93 @@ namespace Carbonfrost.Commons.DotNet {
             get {
                 return _parameters;
             }
+        }
+
+        public PropertyName AddIndexParameter(string name) {
+            return AddIndexParameter(name, (TypeName) null);
+        }
+
+        public PropertyName AddIndexParameter(TypeName parameterType) {
+            return AddIndexParameter(null, parameterType);
+        }
+
+        public PropertyName AddIndexParameter(string name, TypeName parameterType) {
+            return AddIndexParameter(name, parameterType, null, null);
+        }
+
+        public PropertyName AddIndexParameter(string name,
+                                    TypeName parameterType,
+                                    IEnumerable<TypeName> requiredModifiers,
+                                    IEnumerable<TypeName> optionalModifiers) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithIndexParameters(IndexParameters.ImmutableAdd(
+                new DefaultParameterName(this, IndexParameters.Count, name, parameterType, modifiers), CloneParameter
+            ));
+        }
+
+        public PropertyName RemoveIndexParameters() {
+            return WithIndexParameters(Array.Empty<ParameterName>());
+        }
+
+        public PropertyName RemoveIndexParameterAt(int index) {
+            return WithIndexParameters(IndexParameters.ImmutableRemoveAt(index, CloneParameter));
+        }
+
+        public PropertyName RemoveIndexParameter(ParameterName parameter) {
+            return WithIndexParameters(IndexParameters.ImmutableRemove(parameter, CloneParameter));
+        }
+
+        public PropertyName InsertIndexParameterAt(int index, string name) {
+            return WithIndexParameters(IndexParameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, null, null), CloneParameter
+            ));
+        }
+
+        public PropertyName InsertIndexParameterAt(int index, TypeName parameterType) {
+            return WithIndexParameters(IndexParameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, null, parameterType, null), CloneParameter
+            ));
+        }
+
+        public PropertyName InsertIndexParameterAt(int index, string name, TypeName parameterType) {
+            return WithIndexParameters(IndexParameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, null), CloneParameter
+            ));
+        }
+
+        public PropertyName InsertIndexParameterAt(int index, string name, TypeName parameterType, IEnumerable<TypeName> requiredModifiers, IEnumerable<TypeName> optionalModifiers) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithIndexParameters(IndexParameters.ImmutableInsertAt(
+                index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter
+            ));
+        }
+
+        public PropertyName SetIndexParameter(int index, string name, TypeName parameterType) {
+            return SetIndexParameter(index, name, parameterType, null, null);
+        }
+
+        public PropertyName SetIndexParameter(int index,
+            string name,
+            TypeName parameterType,
+            IEnumerable<TypeName> requiredModifiers,
+            IEnumerable<TypeName> optionalModifiers
+        ) {
+            var modifiers = new ModifierCollection(requiredModifiers, optionalModifiers);
+            return WithIndexParameters(
+                IndexParameters.ImmutableSet(index, new DefaultParameterName(this, index, name, parameterType, modifiers), CloneParameter)
+            );
+        }
+
+        private PropertyName WithIndexParameters(ParameterName[] items) {
+            return new PropertyName(DeclaringType, Name, PropertyType, items);
+        }
+
+        private ParameterName CloneIndexParameter(ParameterName t, int index) {
+            return new DefaultParameterName(this, index, t.Name, t.ParameterType, t.Modifiers);
+        }
+
+        private ParameterName CloneParameter(ParameterName t, int index) {
+            return new DefaultParameterName(this, index, t.Name, t.ParameterType, t.Modifiers);
         }
 
         private MethodName GetGetMethod() {

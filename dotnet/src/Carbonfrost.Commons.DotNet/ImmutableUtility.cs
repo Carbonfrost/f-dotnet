@@ -51,5 +51,37 @@ namespace Carbonfrost.Commons.DotNet {
             pms[index] = value;
             return pms;
         }
+
+        internal static T[] RemoveAt<T>(IReadOnlyList<T> source, int index, Func<T, int, T> copyValues) {
+            T[] pms = new T[source.Count - 1];
+            int dest = 0;
+            for (int src = 0; src < source.Count; src++) {
+                if (src == index) {
+                    continue;
+                }
+                pms[dest] = copyValues(source[src], dest);
+                dest++;
+            }
+            return pms;
+        }
+
+        internal static T[] Remove<T>(IReadOnlyList<T> source, T value, Func<T, int, T> copyValues) {
+            for (int index = 0; index < source.Count; index++) {
+                if (EqualityComparer<T>.Default.Equals(value, source[index])) {
+                    return RemoveAt(source, index, copyValues);
+                }
+            }
+            return Copy(source, copyValues);
+        }
+
+        internal static T[] Copy<T>(IReadOnlyList<T> source, Func<T, int, T> copyValues) {
+            var pms = new T[source.Count];
+            int position = 0;
+            foreach (var pm in source) {
+                pms[position] = copyValues(pm, position);
+                position++;
+            }
+            return pms;
+        }
     }
 }
