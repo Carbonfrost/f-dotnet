@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Carbonfrost.Commons.Spec" Version="0.2.0" />
+    <PackageReference Include="Carbonfrost.Commons.Spec" Version="0.7.0" />
   </ItemGroup>
 
   <ItemGroup>
