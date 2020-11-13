@@ -10,6 +10,10 @@
     </Description>
     <PackageProjectUrl>https://github.com/Carbonfrost/f-dotnet</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Carbonfrost/f-dotnet</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <!-- Ship symbols with package because it has the best compatibility -->
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
